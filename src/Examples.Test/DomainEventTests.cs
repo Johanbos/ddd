@@ -19,8 +19,6 @@ public class DomainEventTests
         var service = new LotMetricService();
         var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecorded
         {
-            EventId = Guid.NewGuid(),
-            OccurredOnUtc = DateTime.UtcNow,
             LotId = new LotId(LotId),
             Metrics = new Dictionary<string, double>
             {

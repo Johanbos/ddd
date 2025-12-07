@@ -12,24 +12,28 @@ public class LotId : StringValueObject
         Value = formattedValue;
     }
 
-    public static new IEnumerable<Exception> Validate(string? value, bool throwOnError, out string formattedValue)
+    public static new IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
     {
-        List<Exception> errors = [];
+        List<DomainError> errors = [];
         if (string.IsNullOrWhiteSpace(value))
         {
             formattedValue = string.Empty;
-            errors.Add(new ArgumentException("LotId cannot be null or empty.", nameof(value)));
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueName = "LotId" });
         }
         else
         {
             formattedValue = value.Trim().ToLowerInvariant();
 
             if (!Regex.IsMatch(formattedValue, Pattern, RegexOptions.IgnoreCase))
-                errors.Add(new ArgumentException($"LotId must match the pattern 'lot-###' where # is a digit. Got: {value}", nameof(value)));
+                errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueName = "LotId" });
         }
 
         if (errors.Count != 0 && throwOnError)
-            throw new AggregateException("Invalid LotId value.", errors);
+        {
+            var aggregateException = new AggregateException(DomainError.ValidationFailed);
+            aggregateException.Data["Errors"] = errors;
+            throw aggregateException;
+        }
 
         return errors;
     }
@@ -39,7 +43,7 @@ public class LotId : StringValueObject
         return TryCreate(value, out valueObject, out _);
     }
 
-    public static bool TryCreate(string value, out LotId? lotId, out IEnumerable<Exception> errors)
+    public static bool TryCreate(string value, out LotId? lotId, out IEnumerable<IDomainError> errors)
     {
         errors = Validate(value, false, out string formattedValue);
         if (errors.Any())

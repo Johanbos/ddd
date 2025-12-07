@@ -2,7 +2,7 @@ using System;
 
 namespace DDD;
 
-public abstract class StringValueObject : IEquatable<StringValueObject>
+public abstract class StringValueObject : IStringValueObject, IEquatable<StringValueObject>
 {
     public string Value { get; protected set; } = string.Empty;
 
