@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="DDD.Test/DDD.Test.csproj" />
   <Project Path="DDD/DDD.csproj" />
-  <Project Path="Examples/DDD.Examples.csproj" />
-  <Project Path="Test/DDD.Examples.Test.csproj" />
+  <Project Path="Examples/Examples.csproj" />
+  <Project Path="Examples.Test/Examples.Test.csproj" />
 </Solution>

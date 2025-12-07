@@ -1,7 +1,7 @@
 
 using DDD.ValueObjects;
 
-namespace DDD.Examples.Models;
+namespace Examples.Models;
 
 public class LotMetrics
 {

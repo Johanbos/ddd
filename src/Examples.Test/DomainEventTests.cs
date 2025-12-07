@@ -1,8 +1,7 @@
-﻿namespace DDD.Test;
+﻿namespace Examples.Test;
 
-using DDD.Examples;
-using DDD.Examples.Application;
-using DDD.Examples.Events;
+using Examples.Application;
+using Examples.Events;
 using DDD.ValueObjects;
 
 public class DomainEventTests
@@ -18,7 +17,7 @@ public class DomainEventTests
         // setup
         var LotId = "lot-123";
         var service = new LotMetricService();
-        var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecordedV1
+        var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecorded
         {
             EventId = Guid.NewGuid(),
             OccurredOnUtc = DateTime.UtcNow,

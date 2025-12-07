@@ -1,11 +1,12 @@
 
+using DDD;
 using DDD.ValueObjects;
 
-namespace DDD.Examples.Events;
+namespace Examples.Events;
 
-public class SGReaderLotMetricsRecordedV1 : DomainEvent
+public class SGReaderLotMetricsRecorded : DomainEvent
 {
-    public SGReaderLotMetricsRecordedV1() : base(1)
+    public SGReaderLotMetricsRecorded() : base(version: 1)
     {
     }
 
