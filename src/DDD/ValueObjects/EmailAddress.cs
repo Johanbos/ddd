@@ -1,12 +1,13 @@
+using System;
 using System.Text.RegularExpressions;
 
 namespace DDD.ValueObjects;
 
-public class LotId : StringValueObject
+public class EmailAddress : StringValueObject
 {
-    private const string Pattern = @"^lot-\d{3}$";
+    private const string Pattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
 
-    public LotId(string value) : base()
+    public EmailAddress(string value) : base()
     {
         _ = Validate(value, true, out string formattedValue);
         Value = formattedValue;
@@ -16,14 +17,14 @@ public class LotId : StringValueObject
     {
         List<DomainError> errors = [];
         formattedValue = value?.Trim().ToLowerInvariant() ?? string.Empty;
-        
+
         if (string.IsNullOrWhiteSpace(formattedValue))
         {
-            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueName = "LotId" });
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueName = "EmailAddress" });
         }
-        else if (!Regex.IsMatch(formattedValue, Pattern, RegexOptions.IgnoreCase))
+        else if (!Regex.IsMatch(formattedValue, Pattern))
         {
-            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueName = "LotId" });
+            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueName = "EmailAddress" });
         }
 
         if (throwOnError && errors.Count != 0)
@@ -32,16 +33,15 @@ public class LotId : StringValueObject
             aggregateException.Data["Errors"] = errors;
             throw aggregateException;
         }
-
         return errors;
     }
 
-    public static bool TryCreate(string value, out LotId? valueObject)
+    public static bool TryCreate(string value, out EmailAddress? valueObject)
     {
         return TryCreate(value, out valueObject, out _);
     }
 
-    public static bool TryCreate(string value, out LotId? valueObject, out IEnumerable<IDomainError> errors)
+    public static bool TryCreate(string value, out EmailAddress? valueObject, out IEnumerable<IDomainError> errors)
     {
         errors = Validate(value, false, out string formattedValue);
         if (errors.Any())
@@ -50,7 +50,7 @@ public class LotId : StringValueObject
             return false;
         }
 
-        valueObject = new LotId(formattedValue);
+        valueObject = new EmailAddress(formattedValue);
         return true;
     }
 }
