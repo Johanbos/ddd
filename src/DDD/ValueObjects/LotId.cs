@@ -12,18 +12,18 @@ public class LotId : StringValueObject
         Value = formattedValue;
     }
 
-    public static new IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
+    public static IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
     {
-        List<DomainError> errors = [];
+        List<IDomainError> errors = [];
         formattedValue = value?.Trim().ToLowerInvariant() ?? string.Empty;
         
         if (string.IsNullOrWhiteSpace(formattedValue))
         {
-            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueName = "LotId" });
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueObjectName = "LotId" });
         }
         else if (!Regex.IsMatch(formattedValue, Pattern, RegexOptions.IgnoreCase))
         {
-            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueName = "LotId" });
+            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueObjectName = "LotId" });
         }
 
         if (throwOnError && errors.Count != 0)

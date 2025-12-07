@@ -13,18 +13,18 @@ public class EmailAddress : StringValueObject
         Value = formattedValue;
     }
 
-    public static new IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
+    public static IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
     {
-        List<DomainError> errors = [];
+        List<IDomainError> errors = [];
         formattedValue = value?.Trim().ToLowerInvariant() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(formattedValue))
         {
-            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueName = "EmailAddress" });
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueObjectName = "EmailAddress" });
         }
         else if (!Regex.IsMatch(formattedValue, Pattern))
         {
-            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueName = "EmailAddress" });
+            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueObjectName = "EmailAddress" });
         }
 
         if (throwOnError && errors.Count != 0)

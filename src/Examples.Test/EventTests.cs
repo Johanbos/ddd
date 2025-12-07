@@ -4,7 +4,7 @@ using Examples.Application;
 using Examples.Events;
 using DDD.ValueObjects;
 
-public class DomainEventTests
+public class EventTests
 {
     [SetUp]
     public void Setup()
@@ -16,7 +16,7 @@ public class DomainEventTests
     {
         // setup
         var LotId = "lot-123";
-        var service = new LotMetricService();
+        var service = new SGReaderService();
         var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecorded
         {
             LotId = new LotId(LotId),

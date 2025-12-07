@@ -4,7 +4,7 @@ namespace DDD.ValueObjects;
 public record DomainError : IDomainError
 {
     public required string Code { get; init; }
-    public string ValueName { get; init; } = string.Empty;
+    public string ValueObjectName { get; init; } = string.Empty;
     public string PropertyName { get; init; } = string.Empty;
 
     public const string ValidationFailed = "ValidationFailed ";

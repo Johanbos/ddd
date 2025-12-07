@@ -1,4 +1,3 @@
-using System;
 
 namespace DDD;
 
@@ -13,9 +12,4 @@ public abstract class StringValueObject : IStringValueObject, IEquatable<StringV
     public override int GetHashCode() => Value.GetHashCode();
 
     public override string ToString() => Value;
-
-    public static IEnumerable<Exception> Validate(string? value, bool throwOnError, out string formattedValue)
-    {
-        throw new NotImplementedException();
-    }
 }
