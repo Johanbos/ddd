@@ -7,4 +7,6 @@ public abstract class DomainEvent(int version) : IDomainEvent
     public int Version { get; init; } = version;
     public DateTime OccurredOnUtc { get; init; } = DateTime.UtcNow;
     public Guid EventId { get; init; } = Guid.NewGuid();
+
+    public string AggregateIdentifier { get; init; } = string.Empty;
 }

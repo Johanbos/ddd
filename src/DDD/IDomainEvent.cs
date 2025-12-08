@@ -25,4 +25,9 @@ public interface IDomainEvent
     /// Gets the unique identifier for this domain event instance.
     /// </summary>
     Guid EventId { get; }
+
+    /// <summary>
+    /// Gets the unique identifier for the aggregate associated with the domain command.
+    /// </summary>
+    string AggregateIdentifier { get; }
 }

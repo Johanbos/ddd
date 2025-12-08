@@ -61,7 +61,7 @@ public class SGReaderService
             // to handle the domain event and update the state of your aggregates.
             LotMetrics = new LotMetrics
             {
-                LotId = sgReaderLotMetricsRecorded.LotId,
+                LotId = new LotId(sgReaderLotMetricsRecorded.AggregateIdentifier),
                 Metrics = sgReaderLotMetricsRecorded.Metrics
             };
             // persist changes to the database or event store as needed

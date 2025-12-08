@@ -30,6 +30,11 @@ public interface IDomainCommand
     Guid CommandId { get; }
 
     /// <summary>
+    /// Gets the unique identifier for the aggregate associated with the domain command.
+    /// </summary>
+    string AggregateIdentifier { get; }
+    
+    /// <summary>
     /// Validates the command according to domain rules.
     /// </summary>
     /// <param name="throwOnError">

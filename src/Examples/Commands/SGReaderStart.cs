@@ -5,7 +5,6 @@ namespace Examples.Application;
 
 public class SGReaderStart : DomainCommand
 {
-    public required string LotId { get; init; }
 
     public SGReaderStart() : base(1)
     {
@@ -14,7 +13,7 @@ public class SGReaderStart : DomainCommand
     public override IEnumerable<IDomainError> Validate(bool throwOnError)
     {
         List<IDomainError> errors = [];
-        errors.AddRange(DDD.ValueObjects.LotId.Validate(LotId, false, out string _));
+        errors.AddRange(DDD.ValueObjects.LotId.Validate(AggregateIdentifier, false, out string _));
 
         if (throwOnError && errors.Count != 0)
         {
