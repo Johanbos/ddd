@@ -3,7 +3,7 @@ using DDD.ValueObjects;
 
 namespace DDD.Commands;
 
-public class SGReaderStart : BaseCommand
+public sealed class SGReaderStart : BaseCommand
 {
     public required LotId LotId { get; init; }
 
