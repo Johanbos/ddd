@@ -38,7 +38,7 @@ public class SGReaderStartTests
             var invalidCommand = new SGReaderStart { LotId = new LotId("invalid-lot") };
 
             // Act
-            var errors = invalidCommand.Validate(false);
+            var errors = invalidCommand.Validate();
 
             // Assert
             Assert.That(errors, Is.Not.Empty);
@@ -51,7 +51,7 @@ public class SGReaderStartTests
             var invalidCommand = new SGReaderStart { LotId = new LotId("invalid-lot") };
 
             // Act & Assert
-            Assert.Throws<AggregateException>(() => invalidCommand.Validate(true));
+            Assert.Throws<AggregateException>(() => invalidCommand.ValidateAndThrow());
         }
     }
 

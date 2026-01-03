@@ -22,14 +22,8 @@ public class SGReaderService
         }
 
         //validate
-        var errors = sgReaderStart.Validate(false);
-        if (errors.Any())
-        {
-            var aggregateException = new AggregateException(DomainError.ValidationFailed);
-            aggregateException.Data["Errors"] = errors;
-            throw aggregateException;
-        }
-
+        sgReaderStart.ValidateAndThrow();
+        
         // this should be an idempotent operation, so check if already processed
         var alreadyProcessed = ReaderStarted;
         if (!alreadyProcessed)
@@ -38,7 +32,9 @@ public class SGReaderService
             // to handle the domain command and update the state of your aggregates.
             ReaderStarted = true;
 
-            // persist changes to the database or event store as needed
+            // persist changes to the database
+
+            // publish a domain event here
         }
         
         // dequeue the command from the message broker
