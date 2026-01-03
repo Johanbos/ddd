@@ -4,7 +4,7 @@ using DDD.ValueObjects.Base;
 
 namespace DDD.ValueObjects;
 
-public partial class EmailAddress : BaseValueObject<EmailAddress>
+public sealed partial class EmailAddress : BaseValueObject<EmailAddress>
 {
     [GeneratedRegex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")]
     private static partial Regex EmailAddressPattern();
