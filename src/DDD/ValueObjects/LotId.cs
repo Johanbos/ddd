@@ -3,7 +3,7 @@ using DDD.ValueObjects.Base;
 
 namespace DDD.ValueObjects;
 
-public partial class LotId : BaseValueObject<LotId>
+public sealed partial class LotId : BaseValueObject<LotId>
 {
     [GeneratedRegex(@"^lot-\d{3}$", RegexOptions.IgnoreCase, "en-NL")]
     private static partial Regex LotIdPattern();
