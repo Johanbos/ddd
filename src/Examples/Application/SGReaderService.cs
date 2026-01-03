@@ -1,6 +1,7 @@
 ﻿using DDD.ValueObjects;
-using Examples.Events;
+using DDD.Commands;
 using Examples.Models;
+using DDD.Events;
 
 namespace Examples.Application;
 
@@ -61,7 +62,7 @@ public class SGReaderService
             // to handle the domain event and update the state of your aggregates.
             LotMetrics = new LotMetrics
             {
-                LotId = new LotId(sgReaderLotMetricsRecorded.AggregateIdentifier),
+                LotId = sgReaderLotMetricsRecorded.LotId,
                 Metrics = sgReaderLotMetricsRecorded.Metrics
             };
             // persist changes to the database or event store as needed

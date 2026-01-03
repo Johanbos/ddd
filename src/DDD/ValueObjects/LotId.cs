@@ -1,56 +1,56 @@
 using System.Text.RegularExpressions;
+using DDD.ValueObjects.Base;
 
 namespace DDD.ValueObjects;
 
-public class LotId : StringValueObject
+public partial class LotId : BaseValueObject<LotId>
 {
-    private const string Pattern = @"^lot-\d{3}$";
+    [GeneratedRegex(@"^lot-\d{3}$", RegexOptions.IgnoreCase, "en-NL")]
+    private static partial Regex LotIdPattern();
 
-    public LotId(string value) : base()
+    public string Value
     {
-        _ = Validate(value, true, out string formattedValue);
-        Value = formattedValue;
+        get;
+        init { field = value.Trim().ToLowerInvariant(); }
+    }
+    
+    public LotId(string value = "") : base()
+    {
+        Value = value;  
     }
 
-    public static IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
+    public override IEnumerable<DomainError> Validate(string propertyName = "LotId")
     {
-        List<IDomainError> errors = [];
-        formattedValue = value?.Trim().ToLowerInvariant() ?? string.Empty;
-        
-        if (string.IsNullOrWhiteSpace(formattedValue))
+        List<DomainError> errors = [];
+        if (string.IsNullOrWhiteSpace(Value))
         {
-            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueObjectName = "LotId" });
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, PropertyName = propertyName });
         }
-        else if (!Regex.IsMatch(formattedValue, Pattern, RegexOptions.IgnoreCase))
+        else if (!LotIdPattern().IsMatch(Value))
         {
-            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueObjectName = "LotId" });
-        }
-
-        if (throwOnError && errors.Count != 0)
-        {
-            var aggregateException = new AggregateException(DomainError.ValidationFailed);
-            aggregateException.Data["Errors"] = errors;
-            throw aggregateException;
+            errors.Add(new DomainError { Code = DomainError.InvalidPattern, PropertyName = propertyName });
         }
 
         return errors;
     }
 
-    public static bool TryCreate(string value, out LotId? valueObject)
+    public override bool Equals(LotId? other)
     {
-        return TryCreate(value, out valueObject, out _);
+        return other is not null && Value.Equals(other.Value);
     }
 
-    public static bool TryCreate(string value, out LotId? valueObject, out IEnumerable<IDomainError> errors)
+    public override bool Equals(object? obj)
     {
-        errors = Validate(value, false, out string formattedValue);
-        if (errors.Any())
-        {
-            valueObject = null;
-            return false;
-        }
+        return Equals(obj as LotId);
+    }
 
-        valueObject = new LotId(formattedValue);
-        return true;
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return Value;
     }
 }

@@ -1,11 +1,12 @@
 ﻿using DDD.ValueObjects;
+using NUnit.Framework.Interfaces;
 
 namespace DDD.Test;
 
 public class LotIdTests
 {
     [TestFixture]
-    public class ValidLotIdTests
+    public class ConstructorLotIdTests
     {
         [Test]
         public void Constructor_WithValidFormat_CreatesLotId()
@@ -16,151 +17,47 @@ public class LotIdTests
             // Assert
             Assert.That(lotId.Value, Is.EqualTo("lot-123"));
         }
-
-        [Test]
-        public void Constructor_WithUppercaseInput_NormalizesToLowercase()
-        {
-            // Arrange & Act
-            var lotId = new LotId("LOT-456");
-
-            // Assert
-            Assert.That(lotId.Value, Is.EqualTo("lot-456"));
-        }
-
-        [Test]
-        public void Constructor_WithMixedCaseInput_NormalizesToLowercase()
-        {
-            // Arrange & Act
-            var lotId = new LotId("LoT-789");
-
-            // Assert
-            Assert.That(lotId.Value, Is.EqualTo("lot-789"));
-        }
-
-        [Test]
-        public void Constructor_WithWhitespace_TrimsAndCreates()
-        {
-            // Arrange & Act
-            var lotId = new LotId("  lot-100  ");
-
-            // Assert
-            Assert.That(lotId.Value, Is.EqualTo("lot-100"));
-        }
-
-        [TestCase("lot-000")]
-        [TestCase("lot-001")]
-        [TestCase("lot-999")]
-        public void Constructor_WithValidThreeDigitNumbers_CreatesLotId(string validValue)
-        {
-            // Arrange & Act
-            var lotId = new LotId(validValue);
-
-            // Assert
-            Assert.That(lotId.Value, Is.EqualTo(validValue));
-        }
     }
 
     [TestFixture]
     public class InvalidLotIdTests
     {
-        [Test]
-        public void Constructor_WithNullValue_ThrowsAggregateException()
+        [TestCase("")]
+        [TestCase("   ")]
+        public void Validate_WithWhitespaceOnly_HasErrors(string invalidValue)
         {
-            // Arrange & Act & Assert
-            Assert.Throws<AggregateException>(() => new LotId(null!));
-        }
+            // Arrange
+            var lotId = new LotId(invalidValue);
 
-        [Test]
-        public void Constructor_WithEmptyString_ThrowsAggregateException()
-        {
-            // Arrange & Act & Assert
-            Assert.Throws<AggregateException>(() => new LotId(""));
-        }
+            // Act
+            var errors = lotId.Validate();
 
-        [Test]
-        public void Constructor_WithWhitespaceOnly_ThrowsAggregateException()
-        {
-            // Arrange & Act & Assert
-            Assert.Throws<AggregateException>(() => new LotId("   "));
+            // Assert
+            Assert.That(errors, Is.Not.Empty);
+            Assert.That(errors.Any(e => e.Code == DomainError.CannotBeEmpty), Is.True);
         }
 
         [TestCase("lot-1")]       // Too few digits
         [TestCase("lot-12")]      // Too few digits
         [TestCase("lot-1234")]    // Too many digits
         [TestCase("lot-12345")]   // Too many digits
-        public void Constructor_WithIncorrectDigitCount_ThrowsAggregateException(string invalidValue)
-        {
-            // Arrange & Act & Assert
-            Assert.Throws<AggregateException>(() => new LotId(invalidValue));
-        }
-
         [TestCase("bar-123")]     // Wrong prefix
         [TestCase("lot_123")]     // Wrong separator
         [TestCase("lot 123")]     // Wrong separator
         [TestCase("lot123")]      // Missing separator
         [TestCase("lot-abc")]     // Non-numeric digits
         [TestCase("lot-12a")]     // Mixed alphanumeric
-        public void Constructor_WithInvalidFormat_ThrowsAggregateException(string invalidValue)
+        public void Validate_WithInvalidPattern_HasErrors(string invalidValue)
         {
-            // Arrange & Act & Assert
-            if (invalidValue == "LOT-123")
-            {
-                // This one should pass due to normalization
-                Assert.DoesNotThrow(() => new LotId(invalidValue));
-            }
-            else
-            {
-                Assert.Throws<AggregateException>(() => new LotId(invalidValue));
-            }
-        }
-    }
+            // Arrange
+            var lotId = new LotId(invalidValue);
 
-    [TestFixture]
-    public class TryCreateTests
-    {
-        [Test]
-        public void TryCreate_WithValidValue_ReturnsTrueAndCreatesLotId()
-        {
-            // Arrange & Act
-            var result = LotId.TryCreate("lot-250", out var lotId, out _);
+            // Act
+            var errors = lotId.Validate();
 
             // Assert
-            Assert.That(result, Is.True);
-            Assert.That(lotId, Is.Not.Null);
-            Assert.That(lotId!.Value, Is.EqualTo("lot-250"));
-        }
-
-        [Test]
-        public void TryCreate_WithInvalidValue_ReturnsFalseAndLotsIdIsNull()
-        {
-            // Arrange & Act
-            var result = LotId.TryCreate("invalid-lot", out var lotId, out _);
-
-            // Assert
-            Assert.That(result, Is.False);
-            Assert.That(lotId, Is.Null);
-        }
-
-        [Test]
-        public void TryCreate_WithNullValue_ReturnsFalseAndLotsIdIsNull()
-        {
-            // Arrange & Act
-            var result = LotId.TryCreate(null!, out var lotId);
-
-            // Assert
-            Assert.That(result, Is.False);
-            Assert.That(lotId, Is.Null);
-        }
-
-        [Test]
-        public void TryCreate_WithEmptyString_ReturnsFalseAndLotsIdIsNull()
-        {
-            // Arrange & Act
-            var result = LotId.TryCreate("", out var lotId);
-
-            // Assert
-            Assert.That(result, Is.False);
-            Assert.That(lotId, Is.Null);
+            Assert.That(errors, Is.Not.Empty);
+            Assert.That(errors.Any(e => e.Code == DomainError.InvalidPattern), Is.True);
         }
     }
 

@@ -1,56 +1,57 @@
 using System;
 using System.Text.RegularExpressions;
+using DDD.ValueObjects.Base;
 
 namespace DDD.ValueObjects;
 
-public class EmailAddress : StringValueObject
+public partial class EmailAddress : BaseValueObject<EmailAddress>
 {
-    private const string Pattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+    [GeneratedRegex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")]
+    private static partial Regex EmailAddressPattern();
 
-    public EmailAddress(string value) : base()
+    public string Value
     {
-        _ = Validate(value, true, out string formattedValue);
-        Value = formattedValue;
+        get;
+        init { field = value.Trim().ToLowerInvariant(); }
     }
 
-    public static IEnumerable<IDomainError> Validate(string? value, bool throwOnError, out string formattedValue)
+    public EmailAddress(string value = "") : base()
     {
-        List<IDomainError> errors = [];
-        formattedValue = value?.Trim().ToLowerInvariant() ?? string.Empty;
+        Value = value;
+    }
 
-        if (string.IsNullOrWhiteSpace(formattedValue))
+    public override IEnumerable<DomainError> Validate(string propertyName = "EmailAddress")
+    {
+        List<DomainError> errors = [];
+        if (string.IsNullOrWhiteSpace(Value))
         {
-            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, ValueObjectName = "EmailAddress" });
+            errors.Add(new DomainError { Code = DomainError.CannotBeEmpty, PropertyName = propertyName });
         }
-        else if (!Regex.IsMatch(formattedValue, Pattern))
+        else if (!EmailAddressPattern().IsMatch(Value))
         {
-            errors.Add(new DomainError { Code = DomainError.InvalidFormat, ValueObjectName = "EmailAddress" });
+            errors.Add(new DomainError { Code = DomainError.InvalidPattern, PropertyName = propertyName });
         }
 
-        if (throwOnError && errors.Count != 0)
-        {
-            var aggregateException = new AggregateException(DomainError.ValidationFailed);
-            aggregateException.Data["Errors"] = errors;
-            throw aggregateException;
-        }
         return errors;
     }
 
-    public static bool TryCreate(string value, out EmailAddress? valueObject)
+    public override bool Equals(EmailAddress? other)
     {
-        return TryCreate(value, out valueObject, out _);
+        return other is not null && Value.Equals(other.Value);
     }
 
-    public static bool TryCreate(string value, out EmailAddress? valueObject, out IEnumerable<IDomainError> errors)
+    public override bool Equals(object? obj)
     {
-        errors = Validate(value, false, out string formattedValue);
-        if (errors.Any())
-        {
-            valueObject = null;
-            return false;
-        }
+        return Equals(obj as EmailAddress);
+    }
 
-        valueObject = new EmailAddress(formattedValue);
-        return true;
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return Value;
     }
 }

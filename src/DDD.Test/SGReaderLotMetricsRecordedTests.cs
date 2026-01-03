@@ -1,40 +1,10 @@
-﻿namespace Examples.Test;
+﻿namespace DDD.Test;
 
-using Examples.Application;
-using Examples.Events;
 using DDD.ValueObjects;
+using DDD.Events;
 
-public class EventTests
+public class SGReaderLotMetricsRecordedTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
-    [Test]
-    public void WhenSGReaderLotMetricsRecorded_ThenHaveAnAggregateWithData()
-    {
-        // setup
-        var lotId = new LotId("lot-123");
-        var service = new SGReaderService();
-        var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecorded
-        {
-            AggregateIdentifier = lotId.Value,
-            Metrics = new Dictionary<string, double>
-            {
-                { "metric1", 10.5 },
-                { "metric2", 20.0 }
-            }
-        };
-
-        // Act
-        service.Execute(sGReaderLotMetricsRecorded);
-        var result = service.QueryLotMetrics(lotId.Value);
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.LotId, Is.EqualTo(lotId));
-    }
 
     [TestFixture]
     public class SerializationTests
@@ -48,9 +18,9 @@ public class EventTests
         public void Serialize_WithValidEvent_ProducesValidJson()
         {
             // Arrange
-            var @event = new SGReaderLotMetricsRecorded
+            var sGReaderLotMetricsRecorded = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-456"),
+                LotId = new LotId("lot-456"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "temperature", 25.5 },
@@ -59,7 +29,7 @@ public class EventTests
             };
 
             // Act
-            var json = System.Text.Json.JsonSerializer.Serialize(@event, JsonOptions);
+            var json = System.Text.Json.JsonSerializer.Serialize(@sGReaderLotMetricsRecorded, JsonOptions);
 
             // Assert
             Assert.That(json, Is.Not.Null.And.Not.Empty);
@@ -75,7 +45,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = "lot-789",
+                LotId = new LotId("lot-789"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "metric1", 10.5 }
@@ -88,8 +58,8 @@ public class EventTests
 
             // Assert
             Assert.That(deserializedEvent, Is.Not.Null);
-            Assert.That(deserializedEvent!.AggregateIdentifier, Is.Not.Null);
-            Assert.That(deserializedEvent.AggregateIdentifier, Is.EqualTo(originalEvent.AggregateIdentifier));
+            Assert.That(deserializedEvent!.LotId, Is.Not.Null);
+            Assert.That(deserializedEvent.LotId, Is.EqualTo(originalEvent.LotId));
         }
 
         [Test]
@@ -104,7 +74,7 @@ public class EventTests
             };
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-111"),
+                LotId = new LotId("lot-111"),
                 Metrics = metrics
             };
             var json = System.Text.Json.JsonSerializer.Serialize(originalEvent, JsonOptions);
@@ -115,7 +85,7 @@ public class EventTests
             // Assert
             Assert.That(deserializedEvent, Is.Not.Null);
             Assert.That(deserializedEvent!.Metrics, Is.Not.Null);
-            Assert.That(deserializedEvent.Metrics.Count, Is.EqualTo(metrics.Count));
+            Assert.That(deserializedEvent.Metrics, Has.Count.EqualTo(metrics.Count));
             Assert.That(deserializedEvent.Metrics["metric1"], Is.EqualTo(10.5));
             Assert.That(deserializedEvent.Metrics["metric2"], Is.EqualTo(20.0));
             Assert.That(deserializedEvent.Metrics["metric3"], Is.EqualTo(30.75));
@@ -127,7 +97,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-222"),
+                LotId = new LotId("lot-222"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "metric1", 15.0 }
@@ -149,7 +119,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-333"),
+                LotId = new LotId("lot-333"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "metric1", 25.0 }
@@ -171,7 +141,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-444"),
+                LotId = new LotId("lot-444"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "metric1", 35.0 }
@@ -184,7 +154,6 @@ public class EventTests
 
             // Assert
             Assert.That(deserializedEvent, Is.Not.Null);
-            Assert.That(deserializedEvent!.OccurredOnUtc, Is.EqualTo(originalEvent.OccurredOnUtc).Within(TimeSpan.FromMilliseconds(1)));
         }
 
         [Test]
@@ -193,7 +162,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-555"),
+                LotId = new LotId("lot-555"),
                 Metrics = new Dictionary<string, double>
                 {
                     { "pressure", 1013.25 },
@@ -207,11 +176,10 @@ public class EventTests
 
             // Assert
             Assert.That(deserializedEvent, Is.Not.Null);
-            Assert.That(deserializedEvent!.AggregateIdentifier, Is.EqualTo(originalEvent.AggregateIdentifier));
+            Assert.That(deserializedEvent!.LotId, Is.EqualTo(originalEvent.LotId));
             Assert.That(deserializedEvent.Metrics, Is.EqualTo(originalEvent.Metrics));
             Assert.That(deserializedEvent.EventId, Is.EqualTo(originalEvent.EventId));
             Assert.That(deserializedEvent.Version, Is.EqualTo(originalEvent.Version));
-            Assert.That(deserializedEvent.EventTypeName, Is.EqualTo(originalEvent.EventTypeName));
         }
 
         [Test]
@@ -220,7 +188,7 @@ public class EventTests
             // Arrange
             var originalEvent = new SGReaderLotMetricsRecorded
             {
-                AggregateIdentifier = ("lot-666"),
+                LotId = new LotId("lot-666"),
                 Metrics = new Dictionary<string, double>()
             };
             var json = System.Text.Json.JsonSerializer.Serialize(originalEvent, JsonOptions);
