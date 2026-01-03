@@ -3,7 +3,7 @@ using DDD.ValueObjects.Base;
 
 namespace DDD.ValueObjects;
 
-public class DomainError : BaseValueObject<DomainError>
+public sealed class DomainError : BaseValueObject<DomainError>
 {
     public string Code
     {
